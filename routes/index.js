@@ -1,51 +1,52 @@
-const { response } = require('express');
 const express = require('express');
 const fs = require('fs').promises;
-const router = express.Router();
-const imageDirPath = `${__dirname}/../public/images`;
+const tesseract =  require('tesseract.js');
+const path = require('path');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+const router = express.Router();
+const imageDirPath = path.join(__dirname, '..', 'public', 'images');
+const vinImagePath = path.join(__dirname, '..', 'vin', 'images');
+
+router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
 
 
-router.get("/image", async (request, response) => {
-    response.writeHead(200, {"Content-Type": "text/html"});
+router.get('/image', async (req, res) => {
+    res.writeHead(200, {"Content-Type": "text/html"});
     try{
       const files = await fs.readdir(imageDirPath);
 
       files.forEach(file => {
-        response.write(`<img src="images/${file}">`);
+        res.write(`<img src="${path.join('images', file)}">`);
       });
     }
     catch(err){
       console.log(err);
     }
 
-    response.end();
+    res.end();
     
 });
 
-router.post("/image", async (request, response) => {
-  response.writeHead(200, {"Content-Type": "text/plain"});
+router.post('/image', async (req, res) => {
+  res.writeHead(200, {"Content-Type": "text/plain"});
 
-  console.log("good");
-  let fulljson = "";
+  let fulljson = '';
 
-  request.on("data", chunk => {
+  req.on('data', chunk => {
     fulljson += chunk;
-    console.log("recived");
+
   });
  
 
-  request.on("end", async () => {
+  req.on('end', async () => {
     try{
-      let imageCount = (await fs.readdir(imageDirPath)).length;
-      let images = JSON.parse(fulljson).images;
+      const imageCount = (await fs.readdir(imageDirPath)).length;
+      const images = JSON.parse(fulljson).images;
 
       images.forEach( async imgData => {
-        await fs.writeFile(`images/${imageCount}.jpg`, imgData ,"base64");
+        await fs.writeFile(`${path.join(imageDirPath, imageCount.toString())}.png`, imgData ,'base64');
         imageCount++;
       });
     }
@@ -53,19 +54,19 @@ router.post("/image", async (request, response) => {
       console.log(err);
     }
     
-    response.end();
+    res.end();
   
   });
   
 });
 
-router.delete("/image", async (request, response) => {
-  response.writeHead(200, {"Content-Type": "text/html"});
+router.delete('/image', async (req, res) => {
+  res.writeHead(200, {"Content-Type": "text/html"});
   try{
     const files = await fs.readdir(imageDirPath);
 
     files.forEach( async file => {
-      await fs.unlink(`/images/${file}`);
+      await fs.unlink(path.join(imageDirPath, file));
     });
   }
   catch(err){
@@ -75,6 +76,33 @@ router.delete("/image", async (request, response) => {
 });
 
 router.post('/vin', (req, res) => {
+  res.writeHead(200, {"Content-Type": "text/html"});
+
+  let fulljson = '';
+
+  req.on('data', chunk => 
+    fulljson += chunk
+  );
+
+  req.on('end', async () => {
+    try{
+      const imageCount = (await fs.readdir(vinImagePath)).length;
+      const imagePath = path.join(vinImagePath, imageCount.toString());
+      const image = JSON.parse(fulljson).image;
+      
+      await fs.writeFile(`${imagePath}.png`, image ,'base64');
+
+      const {data: {text}} = await tesseract.recognize(`${imagePath}.png`, 'eng');
+
+      console.log(text);
+      res.write(text);
+    }
+    catch(err){
+      console.log(err);
+    }  
+
+      res.end();
+  });
 
 });
 module.exports = router;
