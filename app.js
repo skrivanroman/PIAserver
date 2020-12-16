@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const env = require('dotenv');
+const jwt = require('jsonwebtoken');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -10,22 +12,23 @@ const imagesRouter = require('./routes/images');
 const vinRouter = require('./routes/vin');
 
 const app = express();
-
+env.config();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
+app.use(express.urlencoded({limit: '500mb', extended: true }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 app.use('/', express.static(path.join(__dirname, 'public')));
-
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/images', imagesRouter);
-app.use('/vin', vinRouter);
+app.use('/vin', verify, vinRouter);
+
 
 // catch 404 and forward to error handler
 app.use( (req, res, next) => {
@@ -43,5 +46,21 @@ app.use( (err, req, res, next) => {
   res.render('error');
 });
 
+function verify (req, res, next) {
+  const token = req.header('auth-token');
 
+  if(!token){
+    res.write('Access denied');
+    return res.end();
+  }
+
+  try{
+    const verified = jwt.verify(token, process.env.JWT_TOKEN);
+    req.user = verified;
+    next();
+  }catch(err){
+    res.write('Invalid token');
+    res.end();
+  }
+}
 module.exports = app;

@@ -2,7 +2,7 @@ USE pia;
 CREATE TABLE users
 (
     id_use int not null AUTO_INCREMENT,
-    user_name varchar(50) not null,
+    user_name varchar(50) UNIQUE not null,
     passwd varchar(100) not null,
     PRIMARY KEY (id_use) 
 );
@@ -18,5 +18,6 @@ CREATE TABLE photo_sessions
 CREATE TABLE car_templates
 (
     id_tem int not null AUTO_INCREMENT,
+    temlates json not null,
     PRIMARY KEY (id_tem)
 );

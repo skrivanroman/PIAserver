@@ -3,9 +3,19 @@ const bcrypt = require('bcryptjs');
 
 async function auth(userName, password){
     
-    const [{passwd}] = await db.query(`SELECT passwd FROM users WHERE user_name="${userName}"`);
+    if(/^[A-z0-9_]{3,50}$/.test(userName)){
+        try{
+            const [{passwd}] = await db.query(`SELECT passwd FROM users WHERE user_name="${userName}"`);
+
+             return await bcrypt.compare(password, passwd); 
+        }
+        catch(err){
+            throw new Error('invalid user name');
+        }
+       
+    }
     
-    return await bcrypt.compare(password, passwd);
+    throw new Error('invalid user name');
    
 }
 
