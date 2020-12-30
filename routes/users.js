@@ -4,6 +4,7 @@ const auth = require('../database/authentication');
 const database = require('../database/db-connection');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const validateReq = require('./validate-req');
 
 const router = express.Router();
 
@@ -12,19 +13,12 @@ const longinSchema = Joi.object().keys({
     password: Joi.string().regex(/^[A-z0-9_]{6,50}$/).required()
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', validateReq(longinSchema), async (req, res) => {
     try {
         const { userName, password } = req.body;
-        const { error } = longinSchema.validate({ userName, password });
-
-        if (error) {
-            res.write(`${error}`);
-            res.end();
-            return;
-        }
 
         if (await auth(userName, password)) {
-            const token = jwt.sign({ userName: userName }, process.env.JWT_TOKEN);
+            const token = jwt.sign({ userName: userName }, process.env.JWT_TOKEN, {expiresIn: '2h'});
             res.header('auth-token', token);
             res.write(token);
         }
@@ -42,16 +36,9 @@ router.post('/login', async (req, res) => {
 
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', validateReq(longinSchema), async (req, res) => {
     try {
         const { userName, password } = req.body;
-        const { error } = longinSchema.validate({ userName, password });
-
-        if (error) {
-            res.write(`${error}`);
-            res.end();
-            return;
-        }
 
         const result = await database.query(`SELECT user_name FROM users WHERE user_name = "${userName}"`);
 

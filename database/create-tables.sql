@@ -10,14 +10,10 @@ CREATE TABLE photo_sessions
 (
     id_ses int not null AUTO_INCREMENT,
     vin varchar(20) not null,
-    session_date date DEFAULT GETDATE(),
-    id_use int,
+    temp_path varchar(50) not null,
+    session_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    photos json,
+    id_use int not null,
     PRIMARY KEY (id_ses),
-    FOREIGN KEY (id_use) REFERENCES (users)
-);
-CREATE TABLE car_templates
-(
-    id_tem int not null AUTO_INCREMENT,
-    temlates json not null,
-    PRIMARY KEY (id_tem)
+    FOREIGN KEY (id_use) REFERENCES users(id_use)
 );

@@ -19,15 +19,15 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.urlencoded({limit: '500mb', extended: true }));
-app.use(express.json());
+app.use(express.json({limit: '500mb'}));
 
 app.use(cookieParser());
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/images', imagesRouter);
-app.use('/vin', verify, vinRouter);
+app.use('/images', verifyUser, imagesRouter);
+app.use('/vin', verifyUser, vinRouter);
 
 
 // catch 404 and forward to error handler
@@ -46,7 +46,7 @@ app.use( (err, req, res, next) => {
   res.render('error');
 });
 
-function verify (req, res, next) {
+function verifyUser(req, res, next) {
   const token = req.header('auth-token');
 
   if(!token){
