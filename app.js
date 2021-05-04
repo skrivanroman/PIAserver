@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 const indexRouter = require('./routes/index')
 //const usersRouter = require('./routes/users')
-const imagesRouter = require('./routes/images')
+//const imagesRouter = require('./routes/images')
 const vinRouter = require('./routes/vin')
 
 const app = express()

@@ -1,22 +1,22 @@
-const db = require('./db-connection');
-const bcrypt = require('bcryptjs');
+// const db = require('./db-connection');
+// const bcrypt = require('bcryptjs');
 
-async function auth(userName, password){
-    
-    if(/^[A-z0-9_]{3,50}$/.test(userName)){
-        try{
-            const [{passwd}] = await db.query(`SELECT passwd FROM users WHERE user_name="${userName}"`);
+// async function auth(userName, password){
 
-             return await bcrypt.compare(password, passwd); 
-        }
-        catch(err){
-            throw new Error('invalid user name');
-        }
-       
-    }
-    
-    throw new Error('invalid user name');
-   
-}
+//     if(/^[A-z0-9_]{3,50}$/.test(userName)){
+//         try{
+//             const [{passwd}] = await db.query(`SELECT passwd FROM users WHERE user_name="${userName}"`);
 
-module.exports = auth;
+//              return await bcrypt.compare(password, passwd);
+//         }
+//         catch(err){
+//             throw new Error('invalid user name');
+//         }
+
+//     }
+
+//     throw new Error('invalid user name');
+
+// }
+
+// module.exports = auth;
