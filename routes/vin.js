@@ -25,7 +25,11 @@ router.post('/', validateReq(imageSchema), async (req, res) => {
         const { image: image64, desiredWidth, desiredHeight } = req.body
         const imgBuff = Buffer.from(image64, 'base64')
 
-        await fs.writeFile('../public/images/test.png', imgBuff)
+        try {
+            await fs.writeFile('/images/test.png', imgBuff)
+        } catch (err) {
+            console.log(err)
+        }
 
         const editedImgBuff = await editImage(
             imgBuff,
