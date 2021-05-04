@@ -2,36 +2,57 @@ const fs = require('fs').promises;
 const path = require('path');
 const jimp = require('jimp');
 
-const edit = async (currPath) => {
-    const stats = await fs.lstat(currPath)
+const edit = (currPath, allImages) => {
+    return new Promise(async resolve => {
+        const stats = await fs.lstat(currPath);
 
-    if (stats.isDirectory()) {
-        const dir = await fs.readdir(currPath);
+        if (stats.isDirectory()) {
+            const dir = await fs.readdir(currPath);
 
-        return dir.forEach(async (file) => {
-            return edit(path.join(currPath, file));
-        });
-    }
-    else if (/.+(\.png)|(\.jpg)$/.test(currPath)) {
-        
-        const img = await jimp.read(currPath);
-
-        if(/\.jpg$/.test(currPath)){
-            img.opaque().opacity(0.07).write(currPath.replace(/\.jpg$/, '.png'));
-            await fs.unlink(currPath);
-            return; 
+            return dir.forEach((file) => {
+                return resolve(edit(`${currPath}/${file}`, allImages));
+            });
         }
-        img.opaque().opacity(0.07).write(currPath);
-    }
-    else {
-        return;
-    }
+        else if (/.+(\.png)|(\.jpg)$/.test(currPath)) {
+
+            allImages.push(currPath);
+            //return allImages;
+            //const img = await jimp.read(currPath);
+
+            // if(/\.jpg$/.test(currPath)){
+            //     img.opaque().opacity(0.07).write(currPath.replace(/\.jpg$/, '.png'));
+            //     await fs.unlink(currPath);
+            //     return; 
+            // }
+            // img.opaque().opacity(0.07).write(currPath);
+        }
+        resolve();
+    });
+
 }
-(async () => {
-    try{
-        edit('../PIAserver/test');
-    }catch(err){
+
+const test = async () => {
+    try {
+        const allImages = [];
+        await edit('templates', allImages);
+
+        allImages.map(e => `${__dirname}/${e}`);
+        let paths = allImages.join(',');
+        await fs.writeFile('./post_production/paths.txt', paths);
+
+        const { spawn } = require('child_process');
+        const pyProg = spawn('python', ['./post_production/test.py', `${__dirname}/post_production/paths.txt`],); //{encoding:'latin-1'}
+
+        pyProg.stdout.on('data', data => {
+            console.log(data.toString());
+        });
+        pyProg.stderr.on('data', (data) => {
+
+            console.log(data.toString());
+        });
+
+    } catch (err) {
         console.log(err);
     }
-    
-})();
+}
+test();

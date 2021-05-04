@@ -25,18 +25,19 @@ decodeVin.decodeVinText = async (vin) => {
     return carData;
 }//('WA1CVBF12KD031461');*/
 
-/*
-(async function getModels() {
-    const {data:{Results}} = await axios.get(`https://vpic.nhtsa.dot.gov/api/vehicles//GetModelsForMake/audi?format=json`);
 
-    Results.forEach(element => {
-        if(/[AQ][0-9]/.test(element.Model_Name)){
-            console.log(element.Model_Name);
-        }
-    });
+// (async function getModels() {
+//     const {data:{Results}} = await axios.get(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/WA1CVBF12KD031461?format=json`);
 
-})();
-*/
+//     Results.forEach(element => {
+//         console.log(element.Variable, element.Value);
+//         // if(/[AQ][0-9]/.test(element.Model_Name)){
+//         //     console.log(element.Model_Name);
+//         // }
+//     });
+   
+// })();
+
 
 
 decodeVin.readImage = async (imageBuffer) => {
