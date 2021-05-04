@@ -1,9 +1,10 @@
-const express = require('express');
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
-});
+    res.send('<img src="/images/test.png">')
+    //res.render('index', { title: 'Express' })
+})
 
-module.exports = router;
+module.exports = router
