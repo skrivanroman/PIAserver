@@ -7,7 +7,7 @@ const env = require('dotenv')
 const jwt = require('jsonwebtoken')
 
 const indexRouter = require('./routes/index')
-const usersRouter = require('./routes/users')
+//const usersRouter = require('./routes/users')
 const imagesRouter = require('./routes/images')
 const vinRouter = require('./routes/vin')
 
@@ -25,8 +25,8 @@ app.use(cookieParser())
 app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.use('/', indexRouter)
-app.use('/users', usersRouter)
-app.use('/images', verifyUser, imagesRouter)
+//app.use('/users', usersRouter)
+//app.use('/images', verifyUser, imagesRouter)
 app.use('/vin', vinRouter)
 //app.use('/vin', verifyUser, vinRouter);
 
