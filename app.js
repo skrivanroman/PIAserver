@@ -63,4 +63,8 @@ function verifyUser(req, res, next) {
         res.end()
     }
 }
+
+process.on('uncaughtException', function (err) {
+    console.log(err)
+})
 module.exports = app
