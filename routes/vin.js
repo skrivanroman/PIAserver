@@ -26,16 +26,12 @@ router.post('/', validateReq(imageSchema), async (req, res) => {
         const imgBuff = Buffer.from(image64, 'base64')
 
         try {
-            await fs.writeFile('/images/test.png', imgBuff)
+            await fs.writeFile(path.join(__dirname, '../public/images/test.png'), imgBuff)
         } catch (err) {
             console.log(err)
         }
 
-        const editedImgBuff = await editImage(
-            imgBuff,
-            desiredWidth,
-            desiredHeight
-        )
+        const editedImgBuff = await editImage(imgBuff, desiredWidth, desiredHeight)
         const vin = await readImage(editedImgBuff)
 
         res.write(JSON.stringify({ vin }))
