@@ -17,8 +17,7 @@ decodeVin.decodeVinText = async vin => {
     let carData = {}
     Results.forEach(element => {
         if (search.includes(element.Variable)) {
-            carData[element.Variable.replace(/\s+/g, '').toLowerCase()] =
-                element.Value
+            carData[element.Variable.replace(/\s+/g, '').toLowerCase()] = element.Value
         }
     })
 
@@ -70,7 +69,7 @@ decodeVin.editImage = async (imageBuffer, desiredWidth, desiredHeight) => {
     const x = Math.floor((width - newWidth) / 2)
     const y = Math.floor(height / 2 - newHeight / 2)
 
-    image.crop(x, y, newWidth, newHeight)
+    //image.crop(x, y, newWidth, newHeight)
     image.quality(100)
     //image.rotate(180);
     image.normalize()
